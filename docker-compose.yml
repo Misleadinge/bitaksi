@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: taxihub-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-taxihub}
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - taxihub-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  driver-service:
+    build:
+      context: ./driver-service
+      dockerfile: Dockerfile
+    container_name: taxihub-driver-service
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      PORT: ${DRIVER_SERVICE_PORT:-8081}
+      MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-taxihub}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      READ_TIMEOUT_SEC: ${READ_TIMEOUT_SEC:-30}
+      WRITE_TIMEOUT_SEC: ${WRITE_TIMEOUT_SEC:-30}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - taxihub-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: taxihub-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: ${GATEWAY_PORT:-8080}
+      DRIVER_SERVICE_URL: ${DRIVER_SERVICE_URL:-http://driver-service:8081}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      JWT_ENABLED: ${JWT_ENABLED:-true}
+      JWT_EXPIRATION_HOURS: ${JWT_EXPIRATION_HOURS:-24}
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
+      RATE_LIMIT_WINDOW_SEC: ${RATE_LIMIT_WINDOW_SEC:-60}
+      READ_TIMEOUT_SEC: ${READ_TIMEOUT_SEC:-30}
+      WRITE_TIMEOUT_SEC: ${WRITE_TIMEOUT_SEC:-30}
+    depends_on:
+      - driver-service
+    networks:
+      - taxihub-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  taxihub-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+
