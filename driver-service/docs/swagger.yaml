@@ -140,10 +140,12 @@ definitions:
       lastName:
         example: Kurt
         type: string
-      location:
-        allOf:
-        - $ref: '#/definitions/github_com_bitaksi_driver-service_internal_domain.Location'
-        description: Nested location object
+      lat:
+        example: 41.0082
+        type: number
+      lon:
+        example: 28.9784
+        type: number
       plate:
         example: 34XYZ789
         type: string
@@ -278,8 +280,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: 'Update an existing driver. Location must be provided as a nested
-        location object: {"location": {"lat": 41.0, "lon": 29.0}}'
+      description: 'Update an existing driver. Location can be updated using top-level
+        lat/lon fields (same format as create): {"lat": 41.0, "lon": 29.0}'
       parameters:
       - description: Driver ID
         example: '"507f1f77bcf86cd799439011"'
@@ -287,8 +289,7 @@ paths:
         name: id
         required: true
         type: string
-      - description: Driver update information. Location must be provided as nested
-          object.
+      - description: Driver update information. Location uses top-level lat/lon fields.
         in: body
         name: driver
         required: true
@@ -298,12 +299,13 @@ paths:
       - application/json
       responses:
         "200":
-          description: Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Mehmet","lastName":"Demir","plate":"34ABC123","taxiType":"sari","carBrand":"Honda","carModel":"Corolla","location":{"lat":41.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
+          description: Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Ali","lastName":"Kurt","plate":"34G99","taxiType":"siyah","carBrand":"Mercedes","carModel":"G
+            Class","location":{"lat":42.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
           schema:
             $ref: '#/definitions/github_com_bitaksi_driver-service_internal_domain.Driver'
         "400":
-          description: Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"latitude
-            must be between -90 and 90"}})
+          description: Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"both
+            lat and lon must be provided together"}})
           schema:
             $ref: '#/definitions/internal_handler.ErrorResponse'
         "404":

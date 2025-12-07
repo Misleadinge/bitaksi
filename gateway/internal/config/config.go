@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Config struct {
 	Logging       LoggingConfig
 	JWT           JWTConfig
 	RateLimit     RateLimitConfig
+	APIKey        APIKeyConfig
 }
 
 // ServerConfig holds server configuration
@@ -46,6 +48,12 @@ type RateLimitConfig struct {
 	Window   time.Duration
 }
 
+// APIKeyConfig holds API key configuration
+type APIKeyConfig struct {
+	Enabled bool
+	Keys    []string
+}
+
 // Load loads configuration from environment variables
 func Load() *Config {
 	readTimeout, _ := strconv.Atoi(getEnv("READ_TIMEOUT_SEC", "30"))
@@ -55,6 +63,20 @@ func Load() *Config {
 	rateLimitWindow, _ := strconv.Atoi(getEnv("RATE_LIMIT_WINDOW_SEC", "60"))
 	jwtEnabled := getEnv("JWT_ENABLED", "true") == "true"
 	rateLimitEnabled := getEnv("RATE_LIMIT_ENABLED", "true") == "true"
+	apiKeyEnabled := getEnv("API_KEY_ENABLED", "false") == "true"
+
+	// Parse API keys from environment (comma-separated)
+	apiKeysStr := getEnv("API_KEYS", "")
+	var apiKeys []string
+	if apiKeysStr != "" {
+		keys := strings.Split(apiKeysStr, ",")
+		for _, key := range keys {
+			trimmed := strings.TrimSpace(key)
+			if trimmed != "" {
+				apiKeys = append(apiKeys, trimmed)
+			}
+		}
+	}
 
 	return &Config{
 		Server: ServerConfig{
@@ -77,6 +99,10 @@ func Load() *Config {
 			Enabled:  rateLimitEnabled,
 			Requests: rateLimitRequests,
 			Window:   time.Duration(rateLimitWindow) * time.Second,
+		},
+		APIKey: APIKeyConfig{
+			Enabled: apiKeyEnabled,
+			Keys:    apiKeys,
 		},
 	}
 }

@@ -221,7 +221,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update an existing driver. Location must be provided as a nested location object: {\"location\": {\"lat\": 41.0, \"lon\": 29.0}}",
+                "description": "Update an existing driver. Location can be updated using top-level lat/lon fields (same format as create): {\"lat\": 41.0, \"lon\": 29.0}",
                 "consumes": [
                     "application/json"
                 ],
@@ -242,7 +242,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Driver update information. Location must be provided as nested object.",
+                        "description": "Driver update information. Location uses top-level lat/lon fields.",
                         "name": "driver",
                         "in": "body",
                         "required": true,
@@ -253,13 +253,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Driver updated successfully\" example({\"id\":\"507f1f77bcf86cd799439011\",\"firstName\":\"Mehmet\",\"lastName\":\"Demir\",\"plate\":\"34ABC123\",\"taxiType\":\"sari\",\"carBrand\":\"Honda\",\"carModel\":\"Corolla\",\"location\":{\"lat\":41.0082,\"lon\":28.9784},\"createdAt\":\"2025-12-06T01:00:00Z\",\"updatedAt\":\"2025-12-06T01:30:00Z\"})",
+                        "description": "Driver updated successfully\" example({\"id\":\"507f1f77bcf86cd799439011\",\"firstName\":\"Ali\",\"lastName\":\"Kurt\",\"plate\":\"34G99\",\"taxiType\":\"siyah\",\"carBrand\":\"Mercedes\",\"carModel\":\"G Class\",\"location\":{\"lat\":42.0082,\"lon\":28.9784},\"createdAt\":\"2025-12-06T01:00:00Z\",\"updatedAt\":\"2025-12-06T01:30:00Z\"})",
                         "schema": {
                             "$ref": "#/definitions/github_com_bitaksi_driver-service_internal_domain.Driver"
                         }
                     },
                     "400": {
-                        "description": "Validation error\" example({\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"latitude must be between -90 and 90\"}})",
+                        "description": "Validation error\" example({\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"both lat and lon must be provided together\"}})",
                         "schema": {
                             "$ref": "#/definitions/internal_handler.ErrorResponse"
                         }
@@ -477,13 +477,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Kurt"
                 },
-                "location": {
-                    "description": "Nested location object",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/github_com_bitaksi_driver-service_internal_domain.Location"
-                        }
-                    ]
+                "lat": {
+                    "type": "number",
+                    "example": 41.0082
+                },
+                "lon": {
+                    "type": "number",
+                    "example": 28.9784
                 },
                 "plate": {
                     "type": "string",

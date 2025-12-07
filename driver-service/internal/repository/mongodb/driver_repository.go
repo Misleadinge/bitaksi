@@ -237,6 +237,17 @@ func (r *DriverRepository) FindNearby(ctx interface{}, lat, lon float64, radiusK
 
 	var nearbyDrivers []driverWithDistance
 	for _, d := range allDrivers {
+		// Skip drivers with invalid locations (zero coordinates or missing location)
+		// Zero coordinates (0, 0) are in the Gulf of Guinea and unlikely to be valid taxi locations
+		if d.Location.Lat == 0 && d.Location.Lon == 0 {
+			continue
+		}
+
+		// Validate location coordinates are within valid ranges
+		if d.Location.Lat < -90 || d.Location.Lat > 90 || d.Location.Lon < -180 || d.Location.Lon > 180 {
+			continue
+		}
+
 		distance := haversine.Distance(lat, lon, d.Location.Lat, d.Location.Lon)
 		if distance <= radiusKm {
 			driver := &domain.Driver{

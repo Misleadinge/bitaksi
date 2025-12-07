@@ -14,12 +14,12 @@ type CreateDriverRequest struct {
 
 // UpdateDriverRequest represents the request to update a driver
 type UpdateDriverRequest struct {
-	FirstName *string  `json:"firstName,omitempty" example:"Mehmet"`
+	FirstName *string  `json:"firstName,omitempty" example:"Ali"`
 	LastName  *string  `json:"lastName,omitempty" example:"Kurt"`
-	Plate     *string  `json:"plate,omitempty" example:"34XYZ789"`
-	TaxiType  *string  `json:"taksiType,omitempty" example:"turkuaz" enums:"sari,turkuaz,siyah"`
-	CarBrand  *string  `json:"carBrand,omitempty" example:"Honda"`
-	CarModel  *string  `json:"carModel,omitempty" example:"Civic"`
-	Lat       *float64 `json:"lat,omitempty" example:"41.0082"`
+	Plate     *string  `json:"plate,omitempty" example:"34G99"`
+	TaxiType  *string  `json:"taksiType,omitempty" example:"siyah" enums:"sari,turkuaz,siyah"`
+	CarBrand  *string  `json:"carBrand,omitempty" example:"Mercedes"`
+	CarModel  *string  `json:"carModel,omitempty" example:"G Class"`
+	Lat       *float64 `json:"lat,omitempty" example:"42.0082"`
 	Lon       *float64 `json:"lon,omitempty" example:"28.9784"`
 }

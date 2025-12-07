@@ -265,7 +265,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Update an existing driver",
+                "description": "Update an existing driver. Location uses top-level lat/lon fields (same format as create).",
                 "consumes": [
                     "application/json"
                 ],
@@ -279,6 +279,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "\"507f1f77bcf86cd799439011\"",
                         "description": "Driver ID",
                         "name": "id",
                         "in": "path",
@@ -296,25 +297,25 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Driver updated successfully",
+                        "description": "Driver updated successfully\" example({\"id\":\"507f1f77bcf86cd799439011\",\"firstName\":\"Ali\",\"lastName\":\"Kurt\",\"plate\":\"34G99\",\"taxiType\":\"siyah\",\"carBrand\":\"Mercedes\",\"carModel\":\"G Class\",\"location\":{\"lat\":42.0082,\"lon\":28.9784},\"createdAt\":\"2025-12-06T01:00:00Z\",\"updatedAt\":\"2025-12-06T01:30:00Z\"})",
                         "schema": {
                             "$ref": "#/definitions/internal_handler.Driver"
                         }
                     },
                     "400": {
-                        "description": "Validation error",
+                        "description": "Validation error\" example({\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"both lat and lon must be provided together\"}})",
                         "schema": {
                             "$ref": "#/definitions/internal_handler.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Driver not found",
+                        "description": "Driver not found\" example({\"error\":{\"code\":\"NOT_FOUND\",\"message\":\"driver not found\"}})",
                         "schema": {
                             "$ref": "#/definitions/internal_handler.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal server error",
+                        "description": "Internal server error\" example({\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"failed to update driver\"}})",
                         "schema": {
                             "$ref": "#/definitions/internal_handler.ErrorResponse"
                         }
@@ -506,15 +507,15 @@ const docTemplate = `{
             "properties": {
                 "carBrand": {
                     "type": "string",
-                    "example": "Honda"
+                    "example": "Mercedes"
                 },
                 "carModel": {
                     "type": "string",
-                    "example": "Civic"
+                    "example": "G Class"
                 },
                 "firstName": {
                     "type": "string",
-                    "example": "Mehmet"
+                    "example": "Ali"
                 },
                 "lastName": {
                     "type": "string",
@@ -522,7 +523,7 @@ const docTemplate = `{
                 },
                 "lat": {
                     "type": "number",
-                    "example": 41.0082
+                    "example": 42.0082
                 },
                 "lon": {
                     "type": "number",
@@ -530,7 +531,7 @@ const docTemplate = `{
                 },
                 "plate": {
                     "type": "string",
-                    "example": "34XYZ789"
+                    "example": "34G99"
                 },
                 "taksiType": {
                     "type": "string",
@@ -539,7 +540,7 @@ const docTemplate = `{
                         "turkuaz",
                         "siyah"
                     ],
-                    "example": "turkuaz"
+                    "example": "siyah"
                 }
             }
         }

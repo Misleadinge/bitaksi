@@ -124,32 +124,32 @@ definitions:
   internal_handler.UpdateDriverRequest:
     properties:
       carBrand:
-        example: Honda
+        example: Mercedes
         type: string
       carModel:
-        example: Civic
+        example: G Class
         type: string
       firstName:
-        example: Mehmet
+        example: Ali
         type: string
       lastName:
         example: Kurt
         type: string
       lat:
-        example: 41.0082
+        example: 42.0082
         type: number
       lon:
         example: 28.9784
         type: number
       plate:
-        example: 34XYZ789
+        example: 34G99
         type: string
       taksiType:
         enum:
         - sari
         - turkuaz
         - siyah
-        example: turkuaz
+        example: siyah
         type: string
     type: object
 host: localhost:8080
@@ -284,9 +284,11 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update an existing driver
+      description: Update an existing driver. Location uses top-level lat/lon fields
+        (same format as create).
       parameters:
       - description: Driver ID
+        example: '"507f1f77bcf86cd799439011"'
         in: path
         name: id
         required: true
@@ -301,19 +303,23 @@ paths:
       - application/json
       responses:
         "200":
-          description: Driver updated successfully
+          description: Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Ali","lastName":"Kurt","plate":"34G99","taxiType":"siyah","carBrand":"Mercedes","carModel":"G
+            Class","location":{"lat":42.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
           schema:
             $ref: '#/definitions/internal_handler.Driver'
         "400":
-          description: Validation error
+          description: Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"both
+            lat and lon must be provided together"}})
           schema:
             $ref: '#/definitions/internal_handler.ErrorResponse'
         "404":
-          description: Driver not found
+          description: Driver not found" example({"error":{"code":"NOT_FOUND","message":"driver
+            not found"}})
           schema:
             $ref: '#/definitions/internal_handler.ErrorResponse'
         "500":
-          description: Internal server error
+          description: Internal server error" example({"error":{"code":"INTERNAL_ERROR","message":"failed
+            to update driver"}})
           schema:
             $ref: '#/definitions/internal_handler.ErrorResponse'
       security:

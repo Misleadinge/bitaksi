@@ -55,17 +55,17 @@ func (h *DriverHandler) CreateDriver(c *gin.Context) {
 
 // UpdateDriver handles PUT /drivers/:id
 // @Summary Update a driver
-// @Description Update an existing driver
+// @Description Update an existing driver. Location uses top-level lat/lon fields (same format as create).
 // @Tags drivers
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param id path string true "Driver ID"
-// @Param driver body UpdateDriverRequest true "Driver update information"
-// @Success 200 {object} Driver "Driver updated successfully"
-// @Failure 400 {object} ErrorResponse "Validation error"
-// @Failure 404 {object} ErrorResponse "Driver not found"
-// @Failure 500 {object} ErrorResponse "Internal server error"
+// @Param id path string true "Driver ID" example("507f1f77bcf86cd799439011")
+// @Param driver body UpdateDriverRequest true "Driver update information" example({"firstName":"Ali","lastName":"Kurt","plate":"34G99","taksiType":"siyah","carBrand":"Mercedes","carModel":"G Class","lat":42.0082,"lon":28.9784})
+// @Success 200 {object} Driver "Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Ali","lastName":"Kurt","plate":"34G99","taxiType":"siyah","carBrand":"Mercedes","carModel":"G Class","location":{"lat":42.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
+// @Failure 400 {object} ErrorResponse "Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"both lat and lon must be provided together"}})
+// @Failure 404 {object} ErrorResponse "Driver not found" example({"error":{"code":"NOT_FOUND","message":"driver not found"}})
+// @Failure 500 {object} ErrorResponse "Internal server error" example({"error":{"code":"INTERNAL_ERROR","message":"failed to update driver"}})
 // @Router /drivers/{id} [put]
 func (h *DriverHandler) UpdateDriver(c *gin.Context) {
 	id := c.Param("id")

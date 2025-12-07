@@ -41,7 +41,8 @@ type UpdateDriverRequest struct {
 	TaxiType  *domain.TaxiType `json:"taksiType,omitempty" example:"turkuaz"`
 	CarBrand  *string          `json:"carBrand,omitempty" example:"Honda"`
 	CarModel  *string          `json:"carModel,omitempty" example:"Civic"`
-	Location  *domain.Location `json:"location,omitempty"` // Nested location object
+	Lat       *float64         `json:"lat,omitempty" example:"41.0082"`
+	Lon       *float64         `json:"lon,omitempty" example:"28.9784"`
 }
 
 // ListDriversResponse represents the paginated list response
@@ -150,13 +151,16 @@ func (uc *driverUseCase) UpdateDriver(ctx context.Context, id string, req *Updat
 		}
 		existing.CarModel = *req.CarModel
 	}
-	// Update location if provided
-	if req.Location != nil {
-		if err := uc.validateLocation(req.Location.Lat, req.Location.Lon); err != nil {
+	// Update location if provided (top-level lat/lon)
+	if req.Lat != nil || req.Lon != nil {
+		if req.Lat == nil || req.Lon == nil {
+			return nil, errors.New("both lat and lon must be provided together")
+		}
+		if err := uc.validateLocation(*req.Lat, *req.Lon); err != nil {
 			return nil, err
 		}
-		existing.Location.Lat = req.Location.Lat
-		existing.Location.Lon = req.Location.Lon
+		existing.Location.Lat = *req.Lat
+		existing.Location.Lon = *req.Lon
 	}
 
 	if err := uc.repo.Update(ctx, id, existing); err != nil {

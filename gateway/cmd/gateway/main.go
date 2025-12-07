@@ -15,6 +15,8 @@ import (
 	"github.com/bitaksi/gateway/internal/middleware"
 	"github.com/bitaksi/gateway/internal/service"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
@@ -126,6 +128,9 @@ func setupRouter(
 	router.Use(rateLimiter.Limit())
 	router.Use(gin.Recovery())
 
+	// Swagger documentation (before other routes to avoid conflicts)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -146,10 +151,18 @@ func setupRouter(
 			drivers.PUT("/:id", driverHandler.UpdateDriver)
 		}
 
-		// Public routes
-		drivers.GET("/:id", driverHandler.GetDriver)
-		drivers.GET("", driverHandler.ListDrivers)
-		drivers.GET("/nearby", driverHandler.FindNearbyDrivers)
+		// Public routes (with optional API key protection)
+		if cfg.APIKey.Enabled {
+			// Apply API key to selected endpoints
+			drivers.GET("/nearby", middleware.APIKeyAuth(cfg, logger), driverHandler.FindNearbyDrivers)
+			drivers.GET("", middleware.APIKeyAuth(cfg, logger), driverHandler.ListDrivers)
+			drivers.GET("/:id", driverHandler.GetDriver) // Keep this public
+		} else {
+			// All GET routes are public when API key is disabled
+			drivers.GET("/:id", driverHandler.GetDriver)
+			drivers.GET("", driverHandler.ListDrivers)
+			drivers.GET("/nearby", driverHandler.FindNearbyDrivers)
+		}
 	}
 
 	return router

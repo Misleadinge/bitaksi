@@ -58,14 +58,14 @@ func (h *DriverHandler) CreateDriver(c *gin.Context) {
 
 // UpdateDriver handles PUT /drivers/:id
 // @Summary Update a driver
-// @Description Update an existing driver. Location must be provided as a nested location object: {"location": {"lat": 41.0, "lon": 29.0}}
+// @Description Update an existing driver. Location can be updated using top-level lat/lon fields (same format as create): {"lat": 41.0, "lon": 29.0}
 // @Tags drivers
 // @Accept json
 // @Produce json
 // @Param id path string true "Driver ID" example("507f1f77bcf86cd799439011")
-// @Param driver body usecase.UpdateDriverRequest true "Driver update information. Location must be provided as nested object." example({"location":{"lat":41.0082,"lon":28.9784}})
-// @Success 200 {object} domain.Driver "Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Mehmet","lastName":"Demir","plate":"34ABC123","taxiType":"sari","carBrand":"Honda","carModel":"Corolla","location":{"lat":41.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
-// @Failure 400 {object} ErrorResponse "Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"latitude must be between -90 and 90"}})
+// @Param driver body usecase.UpdateDriverRequest true "Driver update information. Location uses top-level lat/lon fields." example({"firstName":"Ali","lastName":"Kurt","plate":"34G99","taksiType":"siyah","carBrand":"Mercedes","carModel":"G Class","lat":42.0082,"lon":28.9784})
+// @Success 200 {object} domain.Driver "Driver updated successfully" example({"id":"507f1f77bcf86cd799439011","firstName":"Ali","lastName":"Kurt","plate":"34G99","taxiType":"siyah","carBrand":"Mercedes","carModel":"G Class","location":{"lat":42.0082,"lon":28.9784},"createdAt":"2025-12-06T01:00:00Z","updatedAt":"2025-12-06T01:30:00Z"})
+// @Failure 400 {object} ErrorResponse "Validation error" example({"error":{"code":"VALIDATION_ERROR","message":"both lat and lon must be provided together"}})
 // @Failure 404 {object} ErrorResponse "Driver not found" example({"error":{"code":"NOT_FOUND","message":"driver not found"}})
 // @Failure 500 {object} ErrorResponse "Internal server error" example({"error":{"code":"INTERNAL_ERROR","message":"failed to update driver"}})
 // @Router /drivers/{id} [put]
